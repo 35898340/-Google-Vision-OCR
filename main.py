@@ -4,11 +4,23 @@ from google.cloud import vision
 from google.oauth2 import service_account
 
 import os
+import json
 
 app = FastAPI()
 
-KEY_PATH = "vision_key.json"  # Временно храним файл рядом
-credentials = service_account.Credentials.from_service_account_file(KEY_PATH)
+# Создание временного ключа из переменной окружения
+GOOGLE_CREDENTIALS_JSON = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+
+if not GOOGLE_CREDENTIALS_JSON:
+    raise Exception("Переменная GOOGLE_APPLICATION_CREDENTIALS_JSON не установлена")
+
+# Пишем во временный файл
+KEY_FILE_PATH = "vision_key.json"
+with open(KEY_FILE_PATH, "w") as f:
+    f.write(GOOGLE_CREDENTIALS_JSON)
+
+# Загружаем ключ и создаём клиента Vision API
+credentials = service_account.Credentials.from_service_account_file(KEY_FILE_PATH)
 client = vision.ImageAnnotatorClient(credentials=credentials)
 
 @app.post("/ocr")
