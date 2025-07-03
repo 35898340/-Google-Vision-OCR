@@ -2,4 +2,3 @@ fastapi
 uvicorn
 google-cloud-vision
 google-auth
-python-multipart
